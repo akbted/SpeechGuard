@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
 from langchain_community.vectorstores import AzureSearch
@@ -40,6 +41,10 @@ class BaseSettings:
     LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY", "")
     LANGCHAIN_PROJECT = os.getenv("LANGCHAIN_PROJECT", "")
 
+
+    # Data Folder Path
+    BACKEND_PATH = Path(__file__).parent.parent.parent
+    DATA_FOLDER_PATH = os.path.join(BACKEND_PATH, "data")
 
 def getLLMClient() -> AzureChatOpenAI:
     llm = AzureChatOpenAI(

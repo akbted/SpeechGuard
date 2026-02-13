@@ -2,6 +2,8 @@ import os
 import glob
 import logging
 
+from src.config.settings import settings, getEmbedding
+
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -16,4 +18,16 @@ def index_docs():
     """
 
     # Step 1 - Find the data folder path
+    data_folder = settings.DATA_FOLDER_PATH
+    if not data_folder:
+        raise Exception("Data Folder Not Found - give the correct path")
     
+    # Step 2 - Initialize the Embedding Model
+    try:
+        logger.info("Intializing Embedding Model")
+        embeddings = getEmbedding()
+    except Exception as e:
+        logger.error("Failed to Initialize the embedding due to {e}")
+    
+    # Step 3 -Initialize the Azure Search
+

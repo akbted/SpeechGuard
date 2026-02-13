@@ -9,7 +9,7 @@ class ComplianceIssue(TypedDict):
  
     sub_category: Optional[str]  # e.g., "religious", "caste-based", "regional", "gender"
     target_group: Optional[str]  # Who is being targeted
-    confidence_score: Optional[float]  # Model confidence (0-1)
+    # confidence_score: Optional[float]  # Model confidence (0-1)
     flagged_text: Optional[str]  # The actual problematic content
     legal_reference: Optional[str]  # Relevant Indian law (IPC 153A, 295A, SC/ST Act, etc.)
 

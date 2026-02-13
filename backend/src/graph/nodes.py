@@ -6,8 +6,10 @@ from typing import Dict, Any, List
 import logging
 
 from src.graph.states import ComplianceIssue, VideoAuditState
-from src.config.settings import settings
+from src.config.settings import settings, getLLMClient, getEmbedding, getVectorStore
 from src.services.video_indexer import VideoIndexerService
+from src.graph.prompt import setSystemPrompt
+from langchain_core.messages import SystemMessage, HumanMessage
 
 logger = logging.getLogger(name="compliance_engine")
 logging.basicConfig(level=logging.INFO)
@@ -89,5 +91,77 @@ def compliance_auditor(state: VideoAuditState)-> Dict[str, Any]:
         }
     
     # Step 2: Intialize the LLM Client
-    
-    
+    llm = getLLMClient()
+
+    # Step 3: Intialize the Embedding Client
+    embedding = getEmbedding()
+
+    # Step 4: Intalize the Vector Store
+    vector_store = getVectorStore()
+
+    # Step5: RAG (Implmentation)
+    # Step5.5 Get OCR text from the state
+    ocr_text = state.get("ocr_text", [])
+
+    # Step5.6 Combine Transcript and OCR
+    query_text = f"{transcript} {' '.join(ocr_text)}"
+
+    # Step5.7 - Similarity Search
+    docs = vector_store.similarity_search(query_text, k=5)
+
+    # Step5.8 - Combine the retrived information
+    retrieved_rules = "\n\n".join([doc.page_content for doc in docs])
+
+    # Step 6 - System Prompt for the LLM (Role of the LLM)
+    system_prompt = setSystemPrompt(retrieved_rules)
+
+    # Step 7 - Set User Input
+    user_message = f"""
+    VIDEO METADATA: {state.get('video_meta_data', {})}
+    TRANSCRIPT: {transcript}
+    ON-SCREEN TEXT (OCR): {ocr_text}
+    """
+
+    # Step 8 - Invoking the LLM with System prompt and UserMessage
+    try: 
+        response = llm.invoke(
+            [
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=user_message)
+            ]
+        )
+
+        # Step 9 - Cleaning the output of LLM 
+        content = response.content
+        if "```" in content:
+            # Regex to find JSON inside code blocks
+            content = re.search(r"```(?:json)?(.*?)```", content, re.DOTALL).group(1)
+
+        audit_data = json.loads(content.strip())
+
+        return {
+            "compliance_results": [
+                ComplianceIssue(
+                    category=issue.get("category", "Unknown"),
+                    sub_category=issue.get("sub_category"),
+                    severity=issue.get("severity", "MEDIUM"),
+                    description=issue.get("description", ""),
+                    flagged_text=issue.get("flagged_text"),
+                    time_stamp=issue.get("time_stamp"),
+                    target_group=issue.get("target_group"),
+                    legal_reference=issue.get("legal_reference")
+                )
+                for issue in audit_data.get("compliance_results", [])
+            ],
+            "final_report_status": audit_data.get("status", "FAIL"),
+            "final_report": audit_data.get("final_report", "No report generated.")
+        }
+
+    except Exception as e:
+        logger.error(f"System Error in Auditor Node: {str(e)}")
+        # Log the raw response to see what went wrong
+        logger.error(f"Raw LLM Response: {response.content if 'response' in locals() else 'None'}")
+        return {
+            "errors": [str(e)],
+            "final_report_status": "FAIL"
+        }

@@ -38,12 +38,12 @@ def index_video_node(state: VideoAuditState) -> Dict[str, Any]:
 
         # Step 4: Download the YT video to local path
         if "youtube.com" in video_url:
-            local_path = vi_service.download_yt_video(video_url, output_path=local_file_name)
+            local_path = vi_service.download(video_url, output_path=local_file_name)
         else:
             raise Exception("Please provide a valid URL")
         
         # Step 5: Upload the video to Azure Video Indexer
-        azure_video_id = vi_service.upload_video(local_path, video_name=input_video_id)
+        azure_video_id = vi_service.upload(local_path, video_name=input_video_id)
 
         logger.info(f"Node 1 (Indexer) Upload Successful {video_url} to Azure - {azure_video_id}")
 

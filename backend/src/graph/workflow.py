@@ -1,6 +1,6 @@
 from langgraph.graph import StateGraph, START, END
-from backend.src.graph.states import VideoAuditState
-from backend.src.graph.nodes import (
+from src.graph.states import VideoAuditState
+from src.graph.nodes import (
     index_video_node,
     compliance_auditor
 )

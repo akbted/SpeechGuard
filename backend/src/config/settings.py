@@ -1,5 +1,7 @@
 import os
 from dotenv import load_dotenv
+from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
+from langchain_community.vectorstores import AzureSearch
 
 load_dotenv()
 
@@ -37,6 +39,28 @@ class BaseSettings:
     LANGCHAIN_ENDPOINT = os.getenv("LANGCHAIN_ENDPOINT", "")
     LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY", "")
     LANGCHAIN_PROJECT = os.getenv("LANGCHAIN_PROJECT", "")
+
+
+def getLLMClient() -> AzureChatOpenAI:
+    llm = AzureChatOpenAI(
+        azure_deployment=BaseSettings.AZURE_OPEN_AI_CHAT_DEPLOYMENT,
+        api_version=BaseSettings.AZURE_OPENAI_VERSION,
+        temperature=0.0
+    )
+
+def getEmbedding() -> AzureOpenAIEmbeddings:
+    embeddings = AzureOpenAIEmbeddings(
+        model=BaseSettings.AZURE_OPENAI_EMBEDDING_DEPLOYMENT,
+        api_version=BaseSettings.AZURE_OPENAI_VERSION
+    )
+
+def getVectorStore(embedding: AzureOpenAIEmbeddings) -> AzureSearch:
+    vector_store = AzureSearch(
+        azure_search_endpoint=BaseSettings.AZURE_SEARCH_ENDPOINT,
+        azure_search_key=BaseSettings.AZURE_SEARCH_API_KEY,
+        index_name=BaseSettings.AZURE_SEARCH_INDEX_NAME,
+        embedding_function=embedding.embed_query
+    )
 
 
 settings = BaseSettings()

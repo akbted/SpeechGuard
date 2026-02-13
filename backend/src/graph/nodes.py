@@ -60,7 +60,7 @@ def index_video_node(state: VideoAuditState) -> Dict[str, Any]:
         return clean_data
     
     except Exception as e:
-        logger.info(f"Node 1 (Indexer) VideoIndexer Failed {video_url}")
+        logger.error(f"Node 1 (Indexer) VideoIndexer Failed {video_url}")
         return {
             "error" : str[e],
             "final_report_status": "Fail",
@@ -70,4 +70,24 @@ def index_video_node(state: VideoAuditState) -> Dict[str, Any]:
 
 
 
+# Node 2
+def compliance_auditor(state: VideoAuditState)-> Dict[str, Any]:
+    """
+    - Perform RAG to audit the given content of the Video
+    - Builds a compliance report
+    """
 
+    logger.info("Compliance Auditor Running - Querying using Knowledge base and LLM")
+
+    # Step 1: Get the transcript the state
+    transcript = state.get("transcripts", "")
+    if not transcript:
+        logger.warning("Transcript not found, Skipping Audit")
+        return {
+            "final_report_status": "FAIL",
+            "final_report" : "Audit skipped because video processing failed (No Transcript)"
+        }
+    
+    # Step 2: Intialize the LLM Client
+    
+    

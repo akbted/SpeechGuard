@@ -24,7 +24,7 @@ A scalable, cloud-native engine for automated compliance and hate speech detecti
 
 ## Frontend Preview
 
-![Frontend Screenshot](Frondend.png)
+![Frontend Screenshot](Frontend.png)
 
 ---
 

@@ -29,7 +29,7 @@ def index_docs():
         embeddings = getEmbedding()
         logger.info("Intialized Embedding Model")
     except Exception as e:
-        logger.error("Failed to Initialize the embedding due to {e}")
+        logger.error(f"Failed to Initialize the embedding due to {e}")
         return
     
     # Step 3 - Initialize the Azure Search
@@ -38,7 +38,7 @@ def index_docs():
         vector_store = getVectorStore(embeddings)
         logger.info("Intialized Azure Search")
     except Exception as e:
-        logger.error("Failed to Initialize the Azure Search due to {e}")
+        logger.error(f"Failed to Initialize the Azure Search due to {e}")
         return
 
     # Step 4 - Find the PDF files in data folder

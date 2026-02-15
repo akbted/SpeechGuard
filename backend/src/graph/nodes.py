@@ -5,10 +5,10 @@ import re
 from typing import Dict, Any, List
 import logging
 
-from src.graph.states import ComplianceIssue, VideoAuditState
-from src.config.settings import settings, getLLMClient, getEmbedding, getVectorStore
-from src.services.video_indexer import VideoIndexerService
-from src.graph.prompt import setSystemPrompt
+from backend.src.graph.states import ComplianceIssue, VideoAuditState
+from backend.src.config.settings import settings, getLLMClient, getEmbedding, getVectorStore
+from backend.src.services.video_indexer import VideoIndexerService
+from backend.src.graph.prompt import setSystemPrompt
 from langchain_core.messages import SystemMessage, HumanMessage
 
 logger = logging.getLogger(name="compliance_engine")
@@ -64,7 +64,7 @@ def index_video_node(state: VideoAuditState) -> Dict[str, Any]:
     except Exception as e:
         logger.error(f"Node 1 (Indexer) VideoIndexer Failed {video_url}")
         return {
-            "error" : str[e],
+            "error" : str(e),
             "final_report_status": "Fail",
             "transcript": "",
             "ocr_text": []
@@ -82,7 +82,7 @@ def compliance_auditor(state: VideoAuditState)-> Dict[str, Any]:
     logger.info("Compliance Auditor Running - Querying using Knowledge base and LLM")
 
     # Step 1: Get the transcript the state
-    transcript = state.get("transcripts", "")
+    transcript = state.get("transcript", "")
     if not transcript:
         logger.warning("Transcript not found, Skipping Audit")
         return {
@@ -97,7 +97,7 @@ def compliance_auditor(state: VideoAuditState)-> Dict[str, Any]:
     embedding = getEmbedding()
 
     # Step 4: Intalize the Vector Store
-    vector_store = getVectorStore()
+    vector_store = getVectorStore(embedding)
 
     # Step5: RAG (Implmentation)
     # Step5.5 Get OCR text from the state

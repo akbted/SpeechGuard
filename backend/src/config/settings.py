@@ -50,7 +50,7 @@ def getLLMClient() -> AzureChatOpenAI:
     llm = AzureChatOpenAI(
         azure_deployment=BaseSettings.AZURE_OPEN_AI_CHAT_DEPLOYMENT,
         api_version=BaseSettings.AZURE_OPENAI_VERSION,
-        temperature=0.0
+        # temperature=0.0
     )
     return llm
 

@@ -52,12 +52,14 @@ def getLLMClient() -> AzureChatOpenAI:
         api_version=BaseSettings.AZURE_OPENAI_VERSION,
         temperature=0.0
     )
+    return llm
 
 def getEmbedding() -> AzureOpenAIEmbeddings:
     embeddings = AzureOpenAIEmbeddings(
         model=BaseSettings.AZURE_OPENAI_EMBEDDING_DEPLOYMENT,
         api_version=BaseSettings.AZURE_OPENAI_VERSION
     )
+    return embeddings
 
 def getVectorStore(embedding: AzureOpenAIEmbeddings) -> AzureSearch:
     vector_store = AzureSearch(
@@ -66,6 +68,8 @@ def getVectorStore(embedding: AzureOpenAIEmbeddings) -> AzureSearch:
         index_name=BaseSettings.AZURE_SEARCH_INDEX_NAME,
         embedding_function=embedding.embed_query
     )
+
+    return vector_store
 
 
 settings = BaseSettings()

@@ -1,0 +1,10 @@
+{
+  "dependencies": [
+    "."
+  ],
+  "graphs": {
+    "compliance_engine": "./backend/src/graph/workflow.py:app"
+  },
+  "env": ".env",
+  "python_version": "3.13"
+}

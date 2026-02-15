@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from langchain_openai import AzureChatOpenAI, AzureOpenAIEmbeddings
 from langchain_community.vectorstores import AzureSearch
 
-load_dotenv()
+load_dotenv(override=True)
 
 class BaseSettings:
     

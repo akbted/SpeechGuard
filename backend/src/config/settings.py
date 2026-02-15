@@ -34,6 +34,9 @@ class BaseSettings:
 
     # Azure Monitoring
     APPLICATION_INSIGHT_CONNECTION_STRING = os.getenv("APPLICATION_INSIGHT_CONNECTION_STRING", "")
+    ENVIRONMENT="development"
+    SERVICE_NAME="Drishti-Compliance-Engine"
+    SERVICE_VERSION="1.0.0"
 
     # Langsmith Tracking
     LANGCHAIN_TRACING_V2 = os.getenv("LANGCHAIN_TRACING_V2", "false")

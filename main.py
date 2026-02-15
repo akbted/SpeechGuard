@@ -35,7 +35,7 @@ def run_audit():
 
     # Initial state for the workflow
     initial_state = {
-        "video_url": "https://youtu.be/YOUR_VIDEO_ID",  # Replace with actual URL
+        "video_url": "https://www.youtube.com/watch?v=wSkPsZwvHb0",  
         "video_id": f"vid_{session_id[:8]}",
         "compliance_results": [],
         "errors": []

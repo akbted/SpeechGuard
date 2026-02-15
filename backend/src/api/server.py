@@ -4,17 +4,31 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 from backend.src.api.telemetry import setup_telemetry
 from backend.src.graph.workflow import app as compliance_graph
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("Drishti - Hate Speech Analyzer")
 
+# Setting up telemetry
+setup_telemetry()
+
 # Creating FASTAPI Instance
 api = FastAPI(
     title="Drishti - Analyser",
     description="API for Drishti Hate Speech Analyzer",
     version="1.0.0"
+)
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Data Model
@@ -37,10 +51,10 @@ class AuditResponse(BaseModel):
     status: str              
     final_report: str
     compliance_results: List[ComplianceIssue]
-    errors: List = []       
+    errors: List[str] = []  
 
 # Model Entry
-@api.post("/audit")
+@api.post("/audit", response_model=AuditResponse)
 def audit_video(request: AuditRequest):
 
     video_url = request.video_url
@@ -61,13 +75,14 @@ def audit_video(request: AuditRequest):
 
     try:
         final_state = compliance_graph.invoke(initial_state)
-        final_state_json = request.model_dump()
+
+        logger.info(f"Graph execution complete for {video_id}")
 
         return AuditResponse(
                 session_id=str(session_id),
                 video_id=final_state.get("video_id", video_id),
                 
-                status=final_state.get("final_status", "UNKNOWN"),
+                status=final_state.get("final_report_status", "UNKNOWN"),
                 final_report=final_state.get("final_report", "No report generated."),
                 compliance_results=final_state.get("compliance_results", []),
                 errors=final_state.get("errors", [])

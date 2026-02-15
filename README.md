@@ -29,4 +29,4 @@ A scalable, cloud-native engine for automated compliance and hate speech detecti
 ---
 
 ## Azure Insights
-![Azure Insights](Azure Observability.png)
+![Azure Insights](AzureObservability.png)
